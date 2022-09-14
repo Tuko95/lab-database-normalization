@@ -1,0 +1,194 @@
+// -- Schemas, Tables and References
+
+// Creating tables
+// You can define the tables with full schema names
+Table actor {
+  actor_id smallint
+  first_name varchar(45)
+  last_name varchar(45)
+  last_update timestamp
+  
+  Indexes {
+    (actor_id) [pk]
+  }
+}
+
+Table country {
+  country_id smallint [pk, increment] // auto-increment
+  country varchar(50)
+  last_update timestamp
+}
+
+Table film_category {
+  film_id smallint [pk, increment]
+  category_id tinyint [pk, increment]
+  last_update timestamp
+ }
+ 
+Table category {
+  category_id tinyint [pk, increment]
+  name varchar(25)
+  last_update timestamp
+}
+
+Table film {
+  film_id smallint [pk, increment]
+  title varchar(128)
+  description text
+  release_year year
+  language_id tinyint
+  original_language_id tinyint
+  rental_duration tinyint
+  rental_rate decimal(4.2)
+  length smallint
+  replacement_cost decimal(5.2)
+  rating film_rating_enum
+  special_features Set('Trailer', 'Commentaries', 'Behind the Scenes')
+  last_update timestamp
+}
+
+Table film_actor {
+  actor_id smallint [pk, increment]
+  film_id smallint [pk, increment]
+last_update timestamp
+}
+
+Table language{
+  language_id tinyint [pk, increment]
+  name char(20)
+  last_update timestamp
+}
+
+Table film_text{
+  film_id smallint [pk, increment]
+  title varchar(225)
+  description text
+}
+
+Table address{
+  address_id smallint [pk, increment]
+  address varchar(50)
+  address2 varchar(50)
+  district varchar(20)
+  city_id smallint
+  postal_code varchar(10)
+  phone varchar(20)
+  last_update timestamp
+}
+
+Table inventory{
+  inventory_id mediumint [pk, increment]
+  film_id smallint
+  store_id tinyint
+  last_update timestamp
+}
+
+Table customer{
+  customer_id smallint [pk, increment]
+  store_id tinyint
+  first_name varchar(45)
+  last_name varchar(45)
+  email varchar(50)
+  address_id smallint
+  active boolean
+  create_date datetime
+  last_update timestamp
+}
+
+Table city{
+  city_id smallint [pk, increment]
+  city varchar(50)
+  country_id smallint
+  last_update timestamp
+}
+
+Table store{
+  store_id tinyint [pk, increment]
+  manager_staff_id tinyint
+  address_id smallint
+  last_update timestamp
+}
+
+table rental{
+  rental_id int [pk, increment]
+  rental_date datetime
+  inventory_id mediumint
+  customer_id smallint
+  return_date datetime
+  staff_id tinyint
+  last_update timestamp
+}
+
+table payment{
+  payment_id smallint [pk, increment]
+  customer_id smallint
+  staff_id tinyint
+  rental_id int
+  amount decimal(5.2)
+  payment_date datetime
+  last_update timestamp
+}
+
+table staff{
+ staff_id tinyint [pk, increment]
+ first_name varchar(45)
+ last_name varchar(45)
+ address_id smallint
+ picture blob
+ email varchar(50)
+ store_id tinyint
+ active boolean
+ username varchar(16)
+ password varchar(40)
+ last_update timestamp
+}
+
+// Creating references
+// You can also define relaionship separately
+// > many-to-one; < one-to-many; - one-to-one; <> many-to-many
+
+
+
+Ref: "actor"."actor_id" < "film_actor"."actor_id"
+
+Ref: "film_category"."film_id" < "film"."film_id"
+
+Ref: "film"."film_id" < "film_text"."film_id"
+
+Ref: "film_category"."film_id" < "film_text"."film_id"
+
+Ref: "film_actor"."film_id" < "film_category"."film_id"
+
+Ref: "film_actor"."film_id" < "film"."film_id"
+
+Ref: "film_actor"."film_id" < "film_text"."film_id"
+
+Ref: "inventory"."film_id" < "film_text"."film_id"
+
+Ref: "inventory"."film_id" < "film_category"."film_id"
+
+Ref: "inventory"."film_id" < "film_actor"."film_id"
+
+Ref: "inventory"."film_id" < "film"."film_id"
+
+Ref: "address"."city_id" < "city"."city_id"
+
+Ref: "customer"."address_id" < "staff"."address_id"
+
+Ref: "store"."store_id" < "staff"."store_id"
+
+Ref: "customer"."address_id" < "store"."address_id"
+
+Ref: "city"."country_id" < "country"."country_id"
+
+Ref: "payment"."customer_id" < "customer"."customer_id"
+
+Ref: "category"."category_id" < "film_category"."category_id"
+
+Ref: "rental"."inventory_id" < "inventory"."inventory_id"
+
+Ref: "payment"."staff_id" < "staff"."staff_id"
+
+Ref: "payment"."rental_id" < "rental"."rental_id"
+
+Ref: "film"."language_id" < "language"."language_id"
